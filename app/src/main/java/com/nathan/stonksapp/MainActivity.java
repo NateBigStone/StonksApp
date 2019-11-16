@@ -13,6 +13,10 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.logging.Logger;
+
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -31,14 +35,44 @@ public class MainActivity extends AppCompatActivity {
 
     SymbolService mSymbolService;
 
+
+    ///retrofit debugging
+//    private static Retrofit retrofit = null;
+//
+//    public static Retrofit getClient(){
+//
+//        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
+//        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
+//        OkHttpClient client = new OkHttpClient.Builder()
+//                .addInterceptor(interceptor)
+//                .build();
+//
+//
+//        if(retrofit==null){
+//            retrofit = new Retrofit.Builder()
+//                    .baseUrl(BuildConfig.BASE_URL)
+//                    .addConverterFactory(JacksonConverterFactory.create())
+//                    .client(client)
+//                    .build();
+//        }
+//        return retrofit;
+//    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .build();
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BuildConfig.BASE_URL)
                 .addConverterFactory(JacksonConverterFactory.create())
+                .client(client)
                 .build();
 
         mSymbolService = retrofit.create(SymbolService.class);
@@ -66,9 +100,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getPrice(final String mSymbol) {
-        String mGlobalQuote = "query?function=GLOBAL_QUOTE&symbol=" + mSymbol + "&apikey=" + BuildConfig.API_KEY;
-        Log.d(TAG, "Global Quote : " + mGlobalQuote);
-        mSymbolService.getPrice(mGlobalQuote).enqueue(new Callback<Symbol>() {
+        //String mGlobalQuote = "query?function=GLOBAL_QUOTE&symbol=" + mSymbol + "&apikey=" + BuildConfig.API_KEY;
+
+        String mQuery = "GLOBAL_QUOTE";
+        //String mSymbol = "";
+        //String mKey = "";
+        String mKey = "&apikey=" + BuildConfig.API_KEY;
+        //Log.d(TAG, "Global Quote : " + mGlobalQuote);
+        //Log.d(TAG, "client: " + client);
+        mSymbolService.getPrice(mQuery, mSymbol, BuildConfig.API_KEY).enqueue(new Callback<Symbol>() {
             @Override
             public void onResponse(@NonNull Call<Symbol> call, @NonNull Response<Symbol> response) {
                 Symbol mSymbolResponse = response.body();
