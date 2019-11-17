@@ -35,34 +35,12 @@ public class MainActivity extends AppCompatActivity {
 
     SymbolService mSymbolService;
 
-
-    ///retrofit debugging
-//    private static Retrofit retrofit = null;
-//
-//    public static Retrofit getClient(){
-//
-//        HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-//        interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
-//        OkHttpClient client = new OkHttpClient.Builder()
-//                .addInterceptor(interceptor)
-//                .build();
-//
-//
-//        if(retrofit==null){
-//            retrofit = new Retrofit.Builder()
-//                    .baseUrl(BuildConfig.BASE_URL)
-//                    .addConverterFactory(JacksonConverterFactory.create())
-//                    .client(client)
-//                    .build();
-//        }
-//        return retrofit;
-//    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Retrofit Debugging
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
         OkHttpClient client = new OkHttpClient.Builder()
@@ -100,27 +78,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void getPrice(final String mSymbol) {
-        //String mGlobalQuote = "query?function=GLOBAL_QUOTE&symbol=" + mSymbol + "&apikey=" + BuildConfig.API_KEY;
-
         String mQuery = "GLOBAL_QUOTE";
-        //String mSymbol = "";
-        //String mKey = "";
         String mKey = "&apikey=" + BuildConfig.API_KEY;
-        //Log.d(TAG, "Global Quote : " + mGlobalQuote);
-        //Log.d(TAG, "client: " + client);
         mSymbolService.getPrice(mQuery, mSymbol, BuildConfig.API_KEY).enqueue(new Callback<Symbol>() {
             @Override
             public void onResponse(@NonNull Call<Symbol> call, @NonNull Response<Symbol> response) {
                 Symbol mSymbolResponse = response.body();
                 Log.d(TAG, "Symbol Response: " + mSymbolResponse);
-            }
 
+                if (mSymbolResponse != null) {
+                    mLatestPrice.setVisibility(View.VISIBLE);
+                    mLatestPrice.setText(mSymbolResponse.globalQuote.price);
+                }
+                else {
+                    Toast.makeText(MainActivity.this,"Unable to get information", Toast.LENGTH_SHORT).show();
+                }
+            }
             @Override
             public void onFailure(Call<Symbol> call, Throwable t) {
                 Log.e(TAG, "Error getting info", t);
                 Toast.makeText(MainActivity.this,"Unable to get information", Toast.LENGTH_SHORT).show();
             }
-
         });
     }
 
