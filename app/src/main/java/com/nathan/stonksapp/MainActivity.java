@@ -6,15 +6,11 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import java.util.logging.Logger;
-
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -22,8 +18,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
-
-import static android.view.View.GONE;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -59,9 +53,6 @@ public class MainActivity extends AppCompatActivity {
         mEnterSymbol = findViewById(R.id.enter_symbol);
         mLatestPrice = findViewById(R.id.latest_price);
 
-        // Hide price until one is available
-        mLatestPrice.setVisibility(GONE);
-
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -79,15 +70,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void getPrice(final String mSymbol) {
         String mQuery = "GLOBAL_QUOTE";
-        String mKey = "&apikey=" + BuildConfig.API_KEY;
         mSymbolService.getPrice(mQuery, mSymbol, BuildConfig.API_KEY).enqueue(new Callback<Symbol>() {
             @Override
             public void onResponse(@NonNull Call<Symbol> call, @NonNull Response<Symbol> response) {
                 Symbol mSymbolResponse = response.body();
-                Log.d(TAG, "Symbol Response: " + mSymbolResponse);
-
                 if (mSymbolResponse != null) {
-                    mLatestPrice.setVisibility(View.VISIBLE);
                     mLatestPrice.setText(mSymbolResponse.globalQuote.price);
                 }
                 else {
