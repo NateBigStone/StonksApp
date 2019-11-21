@@ -10,6 +10,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.List;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -27,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
     TextView mLatestPrice;
 
     SymbolService mSymbolService;
+
+    private List<Stock> mStockList;
+    private StockViewModel mStockDatabase;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
                 .client(client)
                 .build();
 
+        mStockDatabase = new StockViewModel(getApplication());
         mSymbolService = retrofit.create(SymbolService.class);
 
         mSearchButton = findViewById(R.id.search_button);
@@ -75,15 +82,32 @@ public class MainActivity extends AppCompatActivity {
                 Symbol mSymbolResponse = response.body();
                 if (mSymbolResponse != null) {
                     mLatestPrice.setText(mSymbolResponse.globalQuote.price);
+                    //Save to database
+                    Stock mNewStock = new Stock(
+                            mSymbolResponse.globalQuote.symbol,
+                            mSymbolResponse.globalQuote.open,
+                            mSymbolResponse.globalQuote.high,
+                            mSymbolResponse.globalQuote.low,
+                            mSymbolResponse.globalQuote.price,
+                            mSymbolResponse.globalQuote.volume,
+                            mSymbolResponse.globalQuote.latestTradingDay,
+                            mSymbolResponse.globalQuote.previousClose,
+                            mSymbolResponse.globalQuote.change,
+                            mSymbolResponse.globalQuote.changePercent);
+                    mStockDatabase.insert(mNewStock);
+                    //TODO: Remove Log.d
+                    Log.d(TAG, "The database is: " + mStockDatabase);
+                    Toast.makeText(MainActivity.this,mSymbolResponse.globalQuote.symbol + " saved to favorites", Toast.LENGTH_LONG).show();
+
                 }
                 else {
-                    Toast.makeText(MainActivity.this,"Unable to get information", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this,"Unable to get information", Toast.LENGTH_LONG).show();
                 }
             }
             @Override
             public void onFailure(Call<Symbol> call, Throwable t) {
                 Log.e(TAG, "Error getting info", t);
-                Toast.makeText(MainActivity.this,"Unable to get information", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this,"Unable to get information", Toast.LENGTH_LONG).show();
             }
         });
     }
