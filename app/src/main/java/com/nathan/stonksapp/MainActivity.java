@@ -6,12 +6,11 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.util.List;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -21,18 +20,19 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity{
 
     private static final String TAG = "MAIN_STONK";
 
-    Button mSearchButton;
-    EditText mEnterSymbol;
-    TextView mLatestPrice;
+    private Button mSearchButton;
+    private EditText mEnterSymbol;
 
-    SymbolService mSymbolService;
-
-    private List<Stock> mStockList;
+    //Database things
+    private SymbolService mSymbolService;
     private StockViewModel mStockDatabase;
+
+    // Create the purple frag
+    private ResultFragment mResultFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +57,14 @@ public class MainActivity extends AppCompatActivity {
 
         mSearchButton = findViewById(R.id.search_button);
         mEnterSymbol = findViewById(R.id.enter_symbol);
-        mLatestPrice = findViewById(R.id.latest_price);
+
+        mResultFragment = ResultFragment.newInstance("");
+        //mResultFragment.setOnStockListener(this);
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.add(R.id.action_fragment, mResultFragment);
+        ft.commit();
+
 
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(@NonNull Call<Symbol> call, @NonNull Response<Symbol> response) {
                 Symbol mSymbolResponse = response.body();
                 if (mSymbolResponse != null) {
-                    mLatestPrice.setText(mSymbolResponse.globalQuote.price);
+
                     //Save to database
                     Stock mNewStock = new Stock(
                             mSymbolResponse.globalQuote.symbol,
@@ -110,6 +117,15 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this,"Unable to get information", Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    public void onStock(String mStockResponse) {
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ResultFragment mResultFragment = ResultFragment.newInstance("");
+        ft.replace(R.id.action_fragment, mResultFragment);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 
     private void hideKeyboard() {
