@@ -2,4 +2,6 @@
     <string name="app_name">StonksApp</string>
     <string name="search_button">SEARCH</string>
     <string name="symbol_hint">Enter ticker symbol</string>
+    <string name="open_label">Open:</string>
+    <string name="empty" />
 </resources>
