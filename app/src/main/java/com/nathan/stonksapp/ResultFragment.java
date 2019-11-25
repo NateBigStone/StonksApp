@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -21,10 +22,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 //TODO: Send response to fragment
-//TODO: Be able to send Fragment empty string
 //TODO: Loading bar for fragment
 //TODO: Add to favorites button
-
 
 public class ResultFragment extends Fragment {
 
@@ -32,10 +31,12 @@ public class ResultFragment extends Fragment {
     private final static String ARG_RESPONSE = "response";
     private String mStockTicker;
 
+    //Response things
+    private Symbol mSymbolResponse;
+
     //Element things
     private TextView mSymbol;
     private TextView mPrice;
-    private TextView mLastUpdated;
     private TextView mOpenLabel;
     private TextView mOpen;
     private TextView mHighLabel;
@@ -52,6 +53,7 @@ public class ResultFragment extends Fragment {
     private TextView mChange;
     private TextView mChangePercentLabel;
     private TextView mChangePercent;
+    private Button mSaveButton;
 
     //Logging thing
     private static final String TAG = "RESULT_STONK";
@@ -102,7 +104,6 @@ public class ResultFragment extends Fragment {
             mStockTicker = getArguments().getString(ARG_RESPONSE);
             getPrice(mStockTicker);
         }
-
     }
 
     @Override
@@ -113,7 +114,6 @@ public class ResultFragment extends Fragment {
         // Inflate the layout for this fragment
         mSymbol = view.findViewById(R.id.symbol);
         mPrice = view.findViewById(R.id.price);
-        mLastUpdated = view.findViewById(R.id.last_updated);
         mOpenLabel = view.findViewById(R.id.open_label);
         mOpen = view.findViewById(R.id.open);
         mHighLabel = view.findViewById(R.id.high_label);
@@ -130,8 +130,18 @@ public class ResultFragment extends Fragment {
         mChange = view.findViewById(R.id.change);
         mChangePercentLabel = view.findViewById(R.id.change_percent_label);
         mChangePercent = view.findViewById(R.id.change_percent);
+        mSaveButton = view.findViewById(R.id.save_to_favorites);
+        mSaveButton.setVisibility(View.GONE);
 
-        //TODO: Create a button to save to favorites
+        //Button to save to favorites
+        mSaveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+               saveToFavorites(mSymbolResponse);
+               //TODO: goto favorites fragment
+            }
+        });
 
         return view;
     }
@@ -141,28 +151,10 @@ public class ResultFragment extends Fragment {
         mSymbolService.getPrice(mQuery, mSymbol, BuildConfig.API_KEY).enqueue(new Callback<Symbol>() {
             @Override
             public void onResponse(@NonNull Call<Symbol> call, @NonNull Response<Symbol> response) {
-                Symbol mSymbolResponse = response.body();
+                mSymbolResponse = response.body();
                 if (mSymbolResponse != null) {
                     //Set the texts
                     setTexts(mSymbolResponse);
-
-                    //Save to database
-                    Stock mNewStock = new Stock(
-                            mSymbolResponse.globalQuote.symbol,
-                            mSymbolResponse.globalQuote.open,
-                            mSymbolResponse.globalQuote.high,
-                            mSymbolResponse.globalQuote.low,
-                            mSymbolResponse.globalQuote.price,
-                            mSymbolResponse.globalQuote.volume,
-                            mSymbolResponse.globalQuote.latestTradingDay,
-                            mSymbolResponse.globalQuote.previousClose,
-                            mSymbolResponse.globalQuote.change,
-                            mSymbolResponse.globalQuote.changePercent);
-                    mStockDatabase.insert(mNewStock);
-                    //TODO: Remove Log.d
-                    Log.d(TAG, "The database is: " + mStockDatabase);
-                    Toast.makeText(getContext(),mSymbolResponse.globalQuote.symbol + " saved to favorites", Toast.LENGTH_LONG).show();
-
                 }
                 else {
                     Toast.makeText(getContext(),"Unable to get information", Toast.LENGTH_LONG).show();
@@ -176,29 +168,47 @@ public class ResultFragment extends Fragment {
         });
     }
 
-    //TODO: create strings in strings.xml for these
     //TODO: create styles for text size and margin
 
     private void setTexts(final Symbol mSymbolResponse){
         mSymbol.setText(mSymbolResponse.globalQuote.symbol);
-        mPrice.setText(mSymbolResponse.globalQuote.price);
-        mOpenLabel.setText("Open: ");
+        mPrice.setText(mSymbolResponse.globalQuote.price.substring(0, mSymbolResponse.globalQuote.price.length() - 2));
+        mOpenLabel.setText(R.string.open_label);
         mOpen.setText(mSymbolResponse.globalQuote.open);
-        mHighLabel.setText("High: ");
+        mHighLabel.setText(R.string.high_label);
         mHigh.setText(mSymbolResponse.globalQuote.high);
-        mLowLabel.setText("Low: ");
+        mLowLabel.setText(R.string.low_label);
         mLow.setText(mSymbolResponse.globalQuote.low);
-        mVolumeLabel.setText("Volume: ");
+        mVolumeLabel.setText(R.string.volume_label);
         mVolume.setText(mSymbolResponse.globalQuote.volume);
-        mLatestTradingDayLabel.setText("Latest Trading Day: ");
+        mLatestTradingDayLabel.setText(R.string.latest_trading_day_label);
         mLatestTradingDay.setText(mSymbolResponse.globalQuote.latestTradingDay);
-        mPreviousCloseLabel.setText("Previous Close: ");
+        mPreviousCloseLabel.setText(R.string.previous_close_label);
         mPreviousClose.setText(mSymbolResponse.globalQuote.previousClose);
-        mChangeLabel.setText("Change: ");
+        mChangeLabel.setText(R.string.change_label);
         mChange.setText(mSymbolResponse.globalQuote.change);
-        mChangePercentLabel.setText("Change Percent: ");
+        mChangePercentLabel.setText(R.string.change_percent_label);
         mChangePercent.setText(mSymbolResponse.globalQuote.changePercent);
-        mLastUpdated.setText("Last Updated: 2019-11-22");
+        mSaveButton.setVisibility(View.VISIBLE);
+    }
+
+    private void saveToFavorites(Symbol mSymbolResponse){
+        //Save to database
+        Stock mNewStock = new Stock(
+                mSymbolResponse.globalQuote.symbol,
+                mSymbolResponse.globalQuote.open,
+                mSymbolResponse.globalQuote.high,
+                mSymbolResponse.globalQuote.low,
+                mSymbolResponse.globalQuote.price,
+                mSymbolResponse.globalQuote.volume,
+                mSymbolResponse.globalQuote.latestTradingDay,
+                mSymbolResponse.globalQuote.previousClose,
+                mSymbolResponse.globalQuote.change,
+                mSymbolResponse.globalQuote.changePercent);
+        mStockDatabase.insert(mNewStock);
+        //TODO: Remove Log.d
+        Log.d(TAG, "The database entry is: " + mStockDatabase);
+        Toast.makeText(getContext(),mSymbolResponse.globalQuote.symbol + " saved to favorites", Toast.LENGTH_LONG).show();
     }
 
 }

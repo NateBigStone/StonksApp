@@ -3,13 +3,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/result_fragment"
+    style="@style/results"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#673AB7"
     tools:context=".ResultFragment">
 
     <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/simpleTableLayout"
+        android:id="@+id/table"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:stretchColumns="*">
@@ -22,13 +22,17 @@
                 android:id="@+id/symbol"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                android:textSize="40sp"
+                android:textStyle="bold"
+                style="@style/results_text" />
 
             <TextView
                 android:id="@+id/price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                android:textSize="32sp"
+                android:textStyle="bold"
+                style="@style/results_text" />
 
         </TableRow>
 
@@ -41,13 +45,13 @@
                 android:id="@+id/open_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                style="@style/results_text" />
 
             <TextView
                 android:id="@+id/open"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                style="@style/results_text" />
 
         </TableRow>
 
@@ -60,13 +64,13 @@
                 android:id="@+id/high_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                style="@style/results_text"  />
 
             <TextView
                 android:id="@+id/high"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                style="@style/results_text"  />
 
         </TableRow>
 
@@ -79,13 +83,13 @@
                 android:id="@+id/low_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                style="@style/results_text"  />
 
             <TextView
                 android:id="@+id/low"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                style="@style/results_text"  />
 
         </TableRow>
 
@@ -98,13 +102,13 @@
                 android:id="@+id/volume_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                style="@style/results_text"  />
 
             <TextView
                 android:id="@+id/volume"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                style="@style/results_text"  />
 
         </TableRow>
 
@@ -117,13 +121,13 @@
                 android:id="@+id/latest_trading_day_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                style="@style/results_text"  />
 
             <TextView
                 android:id="@+id/latest_trading_day"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                style="@style/results_text"  />
 
         </TableRow>
 
@@ -136,13 +140,13 @@
                 android:id="@+id/previous_close_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                style="@style/results_text"  />
 
             <TextView
                 android:id="@+id/previous_close"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                style="@style/results_text"  />
 
         </TableRow>
 
@@ -155,13 +159,13 @@
                 android:id="@+id/change_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                style="@style/results_text"  />
 
             <TextView
                 android:id="@+id/change"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                style="@style/results_text"  />
 
         </TableRow>
 
@@ -174,13 +178,13 @@
                 android:id="@+id/change_percent_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                style="@style/results_text"  />
 
             <TextView
                 android:id="@+id/change_percent"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="24sp" />
+                style="@style/results_text"  />
 
         </TableRow>
 
@@ -189,12 +193,13 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
 
-            <TextView
-                android:id="@+id/last_updated"
+            <Button
+                android:id="@+id/save_to_favorites"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_span="2"
-                android:textSize="24sp" />
+                android:text="@string/save_to_favorites"
+                android:layout_marginTop="10dp"
+                android:layout_span="2"/>
 
         </TableRow>
 

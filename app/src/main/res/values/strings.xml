@@ -2,6 +2,16 @@
     <string name="app_name">StonksApp</string>
     <string name="search_button">SEARCH</string>
     <string name="symbol_hint">Enter ticker symbol</string>
-    <string name="open_label">Open:</string>
+    <string name="open_label">Open: </string>
+
+    <string name="high_label">High: </string>
+    <string name="low_label">Low: </string>
+    <string name="volume_label">Volume: </string>
+    <string name="latest_trading_day_label">Latest Trading Day: </string>
+    <string name="previous_close_label">Previous Close: </string>
+    <string name="change_label">Change: </string>
+    <string name="change_percent_label">Change Percent: </string>
+
+    <string name="save_to_favorites">Save to Favorites</string>
     <string name="empty" />
 </resources>
