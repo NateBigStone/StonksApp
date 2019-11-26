@@ -19,8 +19,8 @@ public class MainActivity extends AppCompatActivity{
     private Button mSearchButton;
     private EditText mEnterSymbol;
 
-    // Create the frag
-    private ResultFragment mResultFragment;
+    // Create the frags
+    private FavoritesFragment mFavoritesFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,10 +30,10 @@ public class MainActivity extends AppCompatActivity{
         mSearchButton = findViewById(R.id.search_button);
         mEnterSymbol = findViewById(R.id.enter_symbol);
 
-        mResultFragment = ResultFragment.newInstance();
+        mFavoritesFragment = FavoritesFragment.newInstance();
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.action_fragment, mResultFragment);
+        ft.add(R.id.action_fragment, mFavoritesFragment);
         ft.commit();
 
 

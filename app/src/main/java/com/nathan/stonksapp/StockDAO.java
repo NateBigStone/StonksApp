@@ -24,12 +24,12 @@ public interface StockDAO {
     void delete(Stock... wr);
 
     @Query("SELECT * FROM Stock WHERE symbol = :symbol LIMIT 1")
-    LiveData<Stock> getRecordForTitle(String symbol);
+    LiveData<Stock> getRecordForSymbol(String symbol);
 
-    @Query("SELECT * FROM Stock WHERE lastUpdated = :date LIMIT 1")
-    LiveData<Stock> getRecordForLastUpdated(String date);
+    @Query("SELECT * FROM Stock WHERE lastUpdated = :lastUpdated LIMIT 1")
+    LiveData<Stock> getRecordForLastUpdated(String lastUpdated);
 
-    @Query("SELECT * FROM Stock ORDER BY lastUpdated DESC")
+    @Query("SELECT * FROM Stock ORDER BY symbol ASC")
     LiveData<List<Stock>> getAllRecords();
 
     @Query("SELECT COUNT(symbol) FROM Stock")

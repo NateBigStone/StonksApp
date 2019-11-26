@@ -1,9 +1,11 @@
 package com.nathan.stonksapp;
-
 import android.os.Bundle;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.Observer;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -13,6 +15,8 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Date;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Call;
@@ -21,9 +25,7 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-//TODO: Send response to fragment
 //TODO: Loading bar for fragment
-//TODO: Add to favorites button
 
 public class ResultFragment extends Fragment {
 
@@ -61,16 +63,14 @@ public class ResultFragment extends Fragment {
     //Database things
     private SymbolService mSymbolService;
     private StockViewModel mStockDatabase;
+    private String mStockQuery;
 
+    //Other frag
+    private FavoritesFragment mFavoritesFragment;
 
     public ResultFragment() {
         // Required empty public constructor
     }
-
-    public static ResultFragment newInstance(){
-        return new ResultFragment();
-    }
-
 
     public static ResultFragment newInstance(String mStockResponse) {
         ResultFragment fragment = new ResultFragment();
@@ -139,7 +139,12 @@ public class ResultFragment extends Fragment {
             public void onClick(View view)
             {
                saveToFavorites(mSymbolResponse);
-               //TODO: goto favorites fragment
+               mFavoritesFragment = FavoritesFragment.newInstance();
+               FragmentManager fm = getActivity().getSupportFragmentManager();
+               FragmentTransaction ft = fm.beginTransaction();
+               ft.replace(R.id.action_fragment, mFavoritesFragment);
+               ft.addToBackStack(null);
+               ft.commit();
             }
         });
 
@@ -192,10 +197,11 @@ public class ResultFragment extends Fragment {
         mSaveButton.setVisibility(View.VISIBLE);
     }
 
-    private void saveToFavorites(Symbol mSymbolResponse){
+    private void saveToFavorites(final Symbol mSymbolResponse){
         //Save to database
-        Stock mNewStock = new Stock(
+        final Stock mNewStock = new Stock(
                 mSymbolResponse.globalQuote.symbol,
+                Long.toString(new Date().getTime()),
                 mSymbolResponse.globalQuote.open,
                 mSymbolResponse.globalQuote.high,
                 mSymbolResponse.globalQuote.low,
@@ -205,10 +211,22 @@ public class ResultFragment extends Fragment {
                 mSymbolResponse.globalQuote.previousClose,
                 mSymbolResponse.globalQuote.change,
                 mSymbolResponse.globalQuote.changePercent);
-        mStockDatabase.insert(mNewStock);
-        //TODO: Remove Log.d
-        Log.d(TAG, "The database entry is: " + mStockDatabase);
-        Toast.makeText(getContext(),mSymbolResponse.globalQuote.symbol + " saved to favorites", Toast.LENGTH_LONG).show();
+
+        mStockDatabase.getRecordForSymbol(mSymbolResponse.globalQuote.symbol).observe(this, new Observer<Stock>() {
+            @Override
+            public void onChanged(Stock stockQuery){
+                if (mStockQuery == null) {
+                    mStockDatabase.insert(mNewStock);
+                    Toast.makeText(getContext(),mSymbolResponse.globalQuote.symbol + " saved to favorites", Toast.LENGTH_LONG).show();
+                }
+                else{
+                    mStockDatabase.update(mNewStock);
+                    Toast.makeText(getContext(),mSymbolResponse.globalQuote.symbol + " updated", Toast.LENGTH_LONG).show();
+                }
+                //TODO: Remove Log.d not sure why query returns some kind of hash thing
+                Log.d(TAG, "The database entry is: " + mStockQuery + " : " + mSymbolResponse.globalQuote.symbol);
+            }
+        });
     }
 
 }

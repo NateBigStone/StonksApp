@@ -79,7 +79,7 @@ public class StockRepository {
     }
 
     public LiveData<Stock> getRecordForSymbol(String symbol) {
-        return mStockDAO.getRecordForTitle(symbol);
+        return mStockDAO.getRecordForSymbol(symbol);
     }
 
     public LiveData<Stock> getRecordForLastUpdated(String date) {

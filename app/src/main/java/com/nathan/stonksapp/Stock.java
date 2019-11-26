@@ -11,11 +11,6 @@ public class Stock {
     @PrimaryKey
     @NonNull
     private String symbol;
-
-    public void setLastUpdated(String lastUpdated) {
-        this.lastUpdated = lastUpdated;
-    }
-
     private String lastUpdated;
     private String open;
     private String high;
@@ -28,10 +23,10 @@ public class Stock {
     private String changePercent;
 
 
-    Stock(String symbol, String open, String high, String low, String price, String volume,
+    Stock(String symbol, String lastUpdated, String open, String high, String low, String price, String volume,
           String latestTradingDay, String previousClose, String change, String changePercent) {
         this.symbol = symbol;
-        this.lastUpdated = Long.toString(new Date().getTime());
+        this.lastUpdated = lastUpdated;
         this.open = open;
         this.high = high;
         this.low = low;
@@ -54,6 +49,10 @@ public class Stock {
 
     public String getLastUpdated() {
         return lastUpdated;
+    }
+
+    public void setLastUpdated(String symbol) {
+        this.lastUpdated = lastUpdated;
     }
 
     public String getOpen() {

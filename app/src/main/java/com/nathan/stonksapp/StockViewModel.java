@@ -24,8 +24,8 @@ public class StockViewModel extends AndroidViewModel {
         return allRecords;
     }
 
-    public LiveData<Stock> getRecordForSymbol(String title) {
-        return repository.getRecordForSymbol(title);
+    public LiveData<Stock> getRecordForSymbol(String symbol) {
+        return repository.getRecordForSymbol(symbol);
     }
 
     public LiveData<Stock> getRecordForLastUpdated(String date) {
