@@ -189,7 +189,7 @@
         </TableRow>
 
         <TableRow
-            android:id="@+id/second_row"
+            android:id="@+id/eleventh_row"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
 
@@ -198,6 +198,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/save_to_favorites"
+                android:layout_marginTop="14dp"
+                android:layout_span="2"/>
+
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/twelfth_row"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/back_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/back_button"
                 android:layout_marginTop="10dp"
                 android:layout_span="2"/>
 

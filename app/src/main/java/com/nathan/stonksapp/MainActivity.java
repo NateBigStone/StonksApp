@@ -1,7 +1,6 @@
 package com.nathan.stonksapp;
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -11,6 +10,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+//Icons from icons8
+//TODO: onlick launch fragment
+//TODO: auto refresh periodically
 
 public class MainActivity extends AppCompatActivity{
 

@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
     android:background="@color/colorPrimary"
     android:gravity="center"
     android:orientation="vertical"
@@ -11,51 +11,63 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_height="wrap_content" >
 
         <LinearLayout
-            android:layout_marginLeft="16dp"
-            android:layout_width="0dp"
+            android:layout_marginLeft="10dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_weight="1">
+            android:layout_weight="1" >
 
-            <TextView
-                android:id="@+id/symbol_recycle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="32sp"
-                android:textStyle="bold"
-                android:textColor="@color/colorPrimaryDark"
-                />
+            <TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:stretchColumns="*">
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+                    <TextView
+                        android:id="@+id/symbol_recycle"
+                        android:layout_width="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:textSize="34sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorPrimaryDark"
+                        />
 
-            <TextView
-                android:id="@+id/price_recycle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="26sp"
-                android:textStyle="bold"
-                android:textColor="@color/colorPrimaryDark"
-                />
+                    <TextView
+                        android:id="@+id/price_recycle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="34sp"
+                        android:textStyle="bold"
+                        android:layout_gravity="end" />
+                </TableRow>
+            </TableLayout>
 
             <TextView
                 android:id="@+id/last_updated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="12sp"
+                android:textSize="14sp"
                 android:textColor="@color/colorPrimaryDark"
                 />
 
         </LinearLayout>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="16dp"
                 android:id="@+id/stock_photo"
                 android:scaleType="centerInside"
                 android:cropToPadding="true"

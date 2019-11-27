@@ -13,13 +13,16 @@
         android:id="@+id/enter_symbol"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:ems="16"
+        android:textSize="26sp"
         android:hint="@string/symbol_hint"
         android:inputType="text"
         app:layout_constraintEnd_toStartOf="@id/search_button"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@android:color/transparent"
+        android:padding="8dp"
+        />
 
     <Button
         android:id="@+id/search_button"
@@ -38,6 +41,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/enter_symbol" />
+        app:layout_constraintTop_toBottomOf="@+id/search_button" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

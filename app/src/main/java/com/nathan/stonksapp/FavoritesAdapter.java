@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Pattern;
 
 
 public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.FavoritesViewHolder> {
@@ -79,8 +80,19 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
         Stock stock = data.get(position);
         holder.symbolView.setText(stock.getSymbol());
-        holder.priceView.setText(stock.getPrice());
+        holder.priceView.setText(stock.getPrice().substring(0, stock.getPrice().length() - 2));
         holder.lastUpdatedView.setText("Last Updated: " + new Date(Long.parseLong(stock.getLastUpdated())));
+
+        Log.d(TAG, stock.getChange() + " : " + stock.getChange().substring(0,1));
+        //https://javarevisited.blogspot.com/2012/10/regular-expression-example-in-java-to-check-String-number.html
+        Pattern dashPattern = Pattern.compile("\\d");
+
+        if(!dashPattern.matcher(stock.getChange().substring(0,1)).matches()){
+            holder.stockPhotoView.setImageResource(R.drawable.icons8_down);
+        }
+        else{
+            holder.stockPhotoView.setImageResource(R.drawable.icons8_up);
+        }
     }
 
     @Override

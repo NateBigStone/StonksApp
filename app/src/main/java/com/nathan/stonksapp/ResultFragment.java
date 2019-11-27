@@ -26,8 +26,6 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
-//TODO: Loading bar for fragment
-
 public class ResultFragment extends Fragment {
 
     //Arg things
@@ -57,6 +55,7 @@ public class ResultFragment extends Fragment {
     private TextView mChangePercentLabel;
     private TextView mChangePercent;
     private Button mSaveButton;
+    private Button mBackButton;
 
     //Logging thing
     private static final String TAG = "RESULT_STONK";
@@ -133,6 +132,8 @@ public class ResultFragment extends Fragment {
         mChangePercent = view.findViewById(R.id.change_percent);
         mSaveButton = view.findViewById(R.id.save_to_favorites);
         mSaveButton.setVisibility(View.GONE);
+        mBackButton = view.findViewById(R.id.back_button);
+        mBackButton.setVisibility(View.GONE);
 
         //Button to save to favorites
         mSaveButton.setOnClickListener(new View.OnClickListener() {
@@ -140,12 +141,16 @@ public class ResultFragment extends Fragment {
             public void onClick(View view)
             {
                saveToFavorites(mSymbolResponse);
-               mFavoritesFragment = FavoritesFragment.newInstance();
-               FragmentManager fm = getActivity().getSupportFragmentManager();
-               FragmentTransaction ft = fm.beginTransaction();
-               ft.replace(R.id.action_fragment, mFavoritesFragment);
-               ft.addToBackStack(null);
-               ft.commit();
+               goBack();
+            }
+        });
+
+        //Button to go back to favorites
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                goBack();
             }
         });
 
@@ -174,8 +179,6 @@ public class ResultFragment extends Fragment {
         });
     }
 
-    //TODO: create styles for text size and margin
-
     private void setTexts(final Symbol mSymbolResponse){
         mSymbol.setText(mSymbolResponse.globalQuote.symbol);
         mPrice.setText(mSymbolResponse.globalQuote.price.substring(0, mSymbolResponse.globalQuote.price.length() - 2));
@@ -196,6 +199,7 @@ public class ResultFragment extends Fragment {
         mChangePercentLabel.setText(R.string.change_percent_label);
         mChangePercent.setText(mSymbolResponse.globalQuote.changePercent);
         mSaveButton.setVisibility(View.VISIBLE);
+        mBackButton.setVisibility(View.VISIBLE);
     }
 
     private void saveToFavorites(final Symbol mSymbolResponse){
@@ -221,16 +225,22 @@ public class ResultFragment extends Fragment {
                 if (mStockQuery == null) {
                     mStockDatabase.insert(mNewStock);
                     Log.d(TAG, "The database entry is saved not updated: " + mStockQuery + " : " + mSymbolResponse.globalQuote.symbol);
-
                 }
                 else{
                     mStockDatabase.update(mNewStock);
                     //Toast.makeText(getContext(),mSymbolResponse.globalQuote.symbol + " updated", Toast.LENGTH_LONG).show();
                 }
-                //TODO: Remove Log.d not sure why query returns some kind of hash thing
-                Log.d(TAG, "The database entry is: " + mStockQuery + " : " + mSymbolResponse.globalQuote.symbol);
             }
         });
         Toast.makeText(getContext(),mSymbolResponse.globalQuote.symbol + " saved to favorites", Toast.LENGTH_LONG).show();
+    }
+
+    private void goBack() {
+        mFavoritesFragment = FavoritesFragment.newInstance();
+        FragmentManager fm = getActivity().getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.action_fragment, mFavoritesFragment);
+        ft.addToBackStack(null);
+        ft.commit();
     }
 }
