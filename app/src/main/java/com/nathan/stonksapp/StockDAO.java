@@ -24,7 +24,7 @@ public interface StockDAO {
     void delete(Stock... wr);
 
     @Query("SELECT * FROM Stock WHERE symbol = :symbol LIMIT 1")
-    LiveData<Stock> getRecordForSymbol(String symbol);
+    Stock getRecordForSymbol(String symbol);
 
     @Query("SELECT * FROM Stock WHERE lastUpdated = :lastUpdated LIMIT 1")
     LiveData<Stock> getRecordForLastUpdated(String lastUpdated);

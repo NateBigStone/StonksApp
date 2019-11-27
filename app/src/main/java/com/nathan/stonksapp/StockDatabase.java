@@ -17,7 +17,7 @@ public abstract class StockDatabase extends RoomDatabase {
         if(INSTANCE == null) {
             synchronized (StockDatabase.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(), StockDatabase.class, "Stock").build();
+                    INSTANCE = Room.databaseBuilder(context.getApplicationContext(), StockDatabase.class, "Stock").enableMultiInstanceInvalidation().build();
                 }
             }
         }

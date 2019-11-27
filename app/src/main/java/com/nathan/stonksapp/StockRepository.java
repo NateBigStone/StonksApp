@@ -78,7 +78,7 @@ public class StockRepository {
         return mStockDAO.getAllRecords();
     }
 
-    public LiveData<Stock> getRecordForSymbol(String symbol) {
+    public Stock getRecordForSymbol(String symbol) {
         return mStockDAO.getRecordForSymbol(symbol);
     }
 

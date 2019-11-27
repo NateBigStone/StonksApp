@@ -24,7 +24,7 @@ public class StockViewModel extends AndroidViewModel {
         return allRecords;
     }
 
-    public LiveData<Stock> getRecordForSymbol(String symbol) {
+    public Stock getRecordForSymbol(String symbol) {
         return repository.getRecordForSymbol(symbol);
     }
 

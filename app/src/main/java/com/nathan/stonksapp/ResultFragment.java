@@ -1,4 +1,5 @@
 package com.nathan.stonksapp;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -63,7 +64,7 @@ public class ResultFragment extends Fragment {
     //Database things
     private SymbolService mSymbolService;
     private StockViewModel mStockDatabase;
-    private String mStockQuery;
+    private Stock mStockQuery;
 
     //Other frag
     private FavoritesFragment mFavoritesFragment;
@@ -212,21 +213,24 @@ public class ResultFragment extends Fragment {
                 mSymbolResponse.globalQuote.change,
                 mSymbolResponse.globalQuote.changePercent);
 
-        mStockDatabase.getRecordForSymbol(mSymbolResponse.globalQuote.symbol).observe(this, new Observer<Stock>() {
+        // From https://stackoverflow.com/questions/44167111/android-room-simple-select-query-cannot-access-database-on-the-main-thread
+        AsyncTask.execute(new Runnable() {
             @Override
-            public void onChanged(Stock stockQuery){
+            public void run() {
+                mStockQuery = mStockDatabase.getRecordForSymbol(mSymbolResponse.globalQuote.symbol);
                 if (mStockQuery == null) {
                     mStockDatabase.insert(mNewStock);
-                    Toast.makeText(getContext(),mSymbolResponse.globalQuote.symbol + " saved to favorites", Toast.LENGTH_LONG).show();
+                    Log.d(TAG, "The database entry is saved not updated: " + mStockQuery + " : " + mSymbolResponse.globalQuote.symbol);
+
                 }
                 else{
                     mStockDatabase.update(mNewStock);
-                    Toast.makeText(getContext(),mSymbolResponse.globalQuote.symbol + " updated", Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getContext(),mSymbolResponse.globalQuote.symbol + " updated", Toast.LENGTH_LONG).show();
                 }
                 //TODO: Remove Log.d not sure why query returns some kind of hash thing
                 Log.d(TAG, "The database entry is: " + mStockQuery + " : " + mSymbolResponse.globalQuote.symbol);
             }
         });
+        Toast.makeText(getContext(),mSymbolResponse.globalQuote.symbol + " saved to favorites", Toast.LENGTH_LONG).show();
     }
-
 }
