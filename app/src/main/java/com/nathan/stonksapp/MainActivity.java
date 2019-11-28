@@ -10,16 +10,18 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 //Icons from icons8
-//TODO: onlick launch fragment
-//TODO: auto refresh periodically
 
 public class MainActivity extends AppCompatActivity{
 
-    private static final String TAG = "MAIN_STONK";
-
     private Button mSearchButton;
     private EditText mEnterSymbol;
+
+    private FragmentManager fm;
+    private FragmentTransaction ft;
 
     // Create the frags
     private FavoritesFragment mFavoritesFragment;
@@ -33,11 +35,10 @@ public class MainActivity extends AppCompatActivity{
         mEnterSymbol = findViewById(R.id.enter_symbol);
 
         mFavoritesFragment = FavoritesFragment.newInstance();
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
+        fm = getSupportFragmentManager();
+        ft = fm.beginTransaction();
         ft.add(R.id.action_fragment, mFavoritesFragment);
         ft.commit();
-
 
         mSearchButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -53,7 +54,16 @@ public class MainActivity extends AppCompatActivity{
 
             }
         });
+
+        //https://stackoverflow.com/questions/11434056/how-to-run-a-method-every-x-seconds
+        new Timer().scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                mFavoritesFragment.updateFavorites();
+            }
+        }, 10000, 300000);
     }
+
 
     public void onSendStock(String mStock) {
         FragmentManager fm = getSupportFragmentManager();

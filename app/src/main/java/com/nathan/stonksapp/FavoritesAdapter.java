@@ -1,6 +1,5 @@
 package com.nathan.stonksapp;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,7 +53,6 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
 
         @Override
         public void onClick(View view){
-
             listener.onListClick(getAdapterPosition());
         }
 
@@ -83,7 +81,6 @@ public class FavoritesAdapter extends RecyclerView.Adapter<FavoritesAdapter.Favo
         holder.priceView.setText(stock.getPrice().substring(0, stock.getPrice().length() - 2));
         holder.lastUpdatedView.setText("Last Updated: " + new Date(Long.parseLong(stock.getLastUpdated())));
 
-        Log.d(TAG, stock.getChange() + " : " + stock.getChange().substring(0,1));
         //https://javarevisited.blogspot.com/2012/10/regular-expression-example-in-java-to-check-String-number.html
         Pattern dashPattern = Pattern.compile("\\d");
 

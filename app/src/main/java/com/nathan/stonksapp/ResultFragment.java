@@ -5,8 +5,6 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.Observer;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -29,11 +27,8 @@ import retrofit2.converter.jackson.JacksonConverterFactory;
 public class ResultFragment extends Fragment {
 
     //Arg things
-    private final static String ARG_RESPONSE = "response";
+    private final static String ARG_SEARCH = "search";
     private String mStockTicker;
-
-    //Response things
-    private Symbol mSymbolResponse;
 
     //Element things
     private TextView mSymbol;
@@ -60,22 +55,24 @@ public class ResultFragment extends Fragment {
     //Logging thing
     private static final String TAG = "RESULT_STONK";
 
-    //Database things
-    private SymbolService mSymbolService;
-    private StockViewModel mStockDatabase;
-    private Stock mStockQuery;
-
     //Other frag
     private FavoritesFragment mFavoritesFragment;
+
+    //API Response
+    private Symbol mSymbolResponse;
 
     public ResultFragment() {
         // Required empty public constructor
     }
 
-    public static ResultFragment newInstance(String mStockResponse) {
+    public static ResultFragment newInstance(){
+        return new ResultFragment();
+    }
+
+    public static ResultFragment newInstance(String mStockSearch) {
         ResultFragment fragment = new ResultFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_RESPONSE, mStockResponse);
+        args.putString(ARG_SEARCH, mStockSearch);
         fragment.setArguments(args);
         return fragment;
     }
@@ -83,26 +80,9 @@ public class ResultFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstance){
         super.onCreate(savedInstance);
-
-        //Retrofit Debugging
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
-        OkHttpClient client = new OkHttpClient.Builder()
-                .addInterceptor(logging)
-                .build();
-
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(BuildConfig.BASE_URL)
-                .addConverterFactory(JacksonConverterFactory.create())
-                .client(client)
-                .build();
-
-        mStockDatabase = new StockViewModel(getActivity().getApplication());
-        mSymbolService = retrofit.create(SymbolService.class);
-
         if(getArguments() != null) {
-            mStockTicker = getArguments().getString(ARG_RESPONSE);
-            getPrice(mStockTicker);
+            //get args
+            mStockTicker = getArguments().getString(ARG_SEARCH);
         }
     }
 
@@ -135,13 +115,18 @@ public class ResultFragment extends Fragment {
         mBackButton = view.findViewById(R.id.back_button);
         mBackButton.setVisibility(View.GONE);
 
+        //make api call
+        getPriceCall(mStockTicker);
+
         //Button to save to favorites
         mSaveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
             {
                saveToFavorites(mSymbolResponse);
-               goBack();
+               Toast.makeText(StonksApp.getContext(),"Saving " + mSymbolResponse.globalQuote.symbol + " to favorites", Toast.LENGTH_LONG).show();
+
+                goBack();
             }
         });
 
@@ -157,24 +142,45 @@ public class ResultFragment extends Fragment {
         return view;
     }
 
-    private void getPrice(final String mSymbol) {
+    private void getPriceCall(final String mSymbol) {
+
+        //Retrofit Debugging
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+        OkHttpClient client = new OkHttpClient.Builder()
+                .addInterceptor(logging)
+                .build();
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(BuildConfig.BASE_URL)
+                .addConverterFactory(JacksonConverterFactory.create())
+                .client(client)
+                .build();
+
+        SymbolService mSymbolService = retrofit.create(SymbolService.class);
+
         String mQuery = "GLOBAL_QUOTE";
+
         mSymbolService.getPrice(mQuery, mSymbol, BuildConfig.API_KEY).enqueue(new Callback<Symbol>() {
             @Override
             public void onResponse(@NonNull Call<Symbol> call, @NonNull Response<Symbol> response) {
                 mSymbolResponse = response.body();
+                Log.d("Response_body", mSymbolResponse.globalQuote.symbol);
+                //if api response is valid
                 if (mSymbolResponse != null) {
                     //Set the texts
                     setTexts(mSymbolResponse);
                 }
                 else {
                     Toast.makeText(getContext(),"Unable to get information", Toast.LENGTH_LONG).show();
+                    goBack();
                 }
             }
             @Override
             public void onFailure(Call<Symbol> call, Throwable t) {
                 Log.e(TAG, "Error getting info", t);
                 Toast.makeText(getContext(),"Unable to get information", Toast.LENGTH_LONG).show();
+                goBack();
             }
         });
     }
@@ -202,37 +208,39 @@ public class ResultFragment extends Fragment {
         mBackButton.setVisibility(View.VISIBLE);
     }
 
-    private void saveToFavorites(final Symbol mSymbolResponse){
+    public void saveToFavorites(final Symbol mSymbolToSave){
+
+        //Database things
+        final StockViewModel mStockDatabase;
+        mStockDatabase = new StockViewModel(StonksApp.getApplication());
         //Save to database
         final Stock mNewStock = new Stock(
-                mSymbolResponse.globalQuote.symbol,
+                mSymbolToSave.globalQuote.symbol,
                 Long.toString(new Date().getTime()),
-                mSymbolResponse.globalQuote.open,
-                mSymbolResponse.globalQuote.high,
-                mSymbolResponse.globalQuote.low,
-                mSymbolResponse.globalQuote.price,
-                mSymbolResponse.globalQuote.volume,
-                mSymbolResponse.globalQuote.latestTradingDay,
-                mSymbolResponse.globalQuote.previousClose,
-                mSymbolResponse.globalQuote.change,
-                mSymbolResponse.globalQuote.changePercent);
+                mSymbolToSave.globalQuote.open,
+                mSymbolToSave.globalQuote.high,
+                mSymbolToSave.globalQuote.low,
+                mSymbolToSave.globalQuote.price,
+                mSymbolToSave.globalQuote.volume,
+                mSymbolToSave.globalQuote.latestTradingDay,
+                mSymbolToSave.globalQuote.previousClose,
+                mSymbolToSave.globalQuote.change,
+                mSymbolToSave.globalQuote.changePercent);
 
         // From https://stackoverflow.com/questions/44167111/android-room-simple-select-query-cannot-access-database-on-the-main-thread
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {
-                mStockQuery = mStockDatabase.getRecordForSymbol(mSymbolResponse.globalQuote.symbol);
+                Stock mStockQuery = mStockDatabase.getRecordForSymbol(mSymbolToSave.globalQuote.symbol);
                 if (mStockQuery == null) {
                     mStockDatabase.insert(mNewStock);
-                    Log.d(TAG, "The database entry is saved not updated: " + mStockQuery + " : " + mSymbolResponse.globalQuote.symbol);
+                    Log.d(TAG, "The database entry is saved not updated: " + mStockQuery + " : " + mSymbolToSave.globalQuote.symbol);
                 }
                 else{
                     mStockDatabase.update(mNewStock);
-                    //Toast.makeText(getContext(),mSymbolResponse.globalQuote.symbol + " updated", Toast.LENGTH_LONG).show();
                 }
             }
         });
-        Toast.makeText(getContext(),mSymbolResponse.globalQuote.symbol + " saved to favorites", Toast.LENGTH_LONG).show();
     }
 
     private void goBack() {
